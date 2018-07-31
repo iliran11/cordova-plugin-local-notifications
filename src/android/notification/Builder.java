@@ -40,6 +40,9 @@ import de.appplant.cordova.plugin.notification.action.Action;
 import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 import static de.appplant.cordova.plugin.notification.Notification.EXTRA_UPDATE;
 
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+
 /**
  * Builder class for local notifications. Build fully configured local
  * notification specified by JSON object passed from JS side.
@@ -143,7 +146,15 @@ public final class Builder {
                 .setTimeoutAfter(options.getTimeout())
                 .setLights(options.getLedColor(), options.getLedOn(), options.getLedOff());
 
-        if (sound != Uri.EMPTY && !isUpdate()) {
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            try {
+                Ringtone r = RingtoneManager.getRingtone(context.getApplicationContext(), sound);
+                r.play();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        else if (sound != Uri.EMPTY && !isUpdate()) {
             builder.setSound(sound);
         }
 
